@@ -2,13 +2,13 @@
 
 ## Project Name
 
-PersonAI
+PersonaI
 
 ---
 
 # Overview
 
-PersonAI is an AI-powered workspace where users interact with an AI assistant through chat. Instead of only receiving text responses, the AI automatically creates the content of the dashboard through information talked about through chat.
+PersonaI is an AI-powered workspace where users interact with an AI assistant through chat. Instead of only receiving text responses, the AI automatically creates the content of the dashboard through information talked about through chat.
 
 The goal is to have a clean organization of important details while reducing manual organization by allowing users to describe or share what they want while the workspace stays synchronized automatically.
 
