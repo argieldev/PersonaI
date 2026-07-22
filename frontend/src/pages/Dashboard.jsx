@@ -1,5 +1,9 @@
 import { useEffect } from "react";
 
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import AiPanel from "../components/AiPanel";
+
 function Dashboard() {
   useEffect(() => {
     async function loadWorkspace() {
@@ -20,7 +24,12 @@ function Dashboard() {
 
   return (
     <>
-      <h1>Welcome</h1>
+      <Navbar />
+      <Sidebar />
+      <div>
+        <h1>Welcome $User</h1>
+      </div>
+      <AiPanel />
     </>
   );
 }
