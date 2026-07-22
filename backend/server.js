@@ -10,6 +10,9 @@ app.use(cors());
 // import routes
 const auth = require("./routes/auth");
 const loadWorkspace = require("./routes/loadWorkspace");
+const connectDB = require("./config/db");
+
+
 
 // register routes
 app.use("/auth", auth);
@@ -17,8 +20,10 @@ app.use("/loadWs", loadWorkspace);
 
 console.log(process.env.JWT_SECRET);
 
+connectDB();
+
 const port = 3000;
 
 app.listen(port, () => {
-  console.log({port});
+  console.log(`Port: ${port}`);
 })
