@@ -2,6 +2,9 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+// Import user model
+const User = require("../models/User");
+
 const users = [
   {
     id: 1,
@@ -13,51 +16,61 @@ const users = [
 ];
 
 router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  try {
+    const { username, email, password } = req.body;
 
-  // Check required fields
-  if (!username || !email || !password) {
-    return res.status(400).json({
-      message: "All fields are required",
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    // Check if email already exists
+    // User.findOne() is a Mongoose method
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user in MongoDB
+    // User.create() is a Mongoose method
+    const newUser = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    // jwt.sign() is a Jsonwebtoken method
+    const token = jwt.sign(
+      {
+        id: newUser._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
+
+    return res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Server error",
     });
   }
-
-  // Hashes password
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const newUser = {
-    id: users.length + 1,
-    username,
-    email,
-    password: hashedPassword,
-    role: "user",
-  };
-
-  // Creates user
-  users.push(newUser);
-
-  // Generate JWT
-  const token = jwt.sign(
-    {
-      id: newUser.id,
-      role: newUser.role,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "7d",
-    }
-  );
-
-  // Register success
-  return res.status(201).json({
-    success: true,
-    token,
-    user: {
-      id: newUser.id,
-      username: newUser.username,
-      email: newUser.email,
-    },
-  });
 });
 
 router.post("/login", async (req, res) => {
@@ -123,6 +136,12 @@ router.post("/login", async (req, res) => {
       message: "Internal server error",
     });
   }
+});
+
+router.get("/test-users", async (req, res) => {
+  const users = await User.find();
+
+  res.json(users);
 });
 
 module.exports = router;
