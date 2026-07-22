@@ -1,5 +1,14 @@
+import { useNavigate } from "react-router-dom"
 
 function Navbar() {
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  }
+
   return (
     <>
       <header>
@@ -8,7 +17,7 @@ function Navbar() {
         <nav>
           <ul>
             <li>Profile</li>
-            <li>Settings</li>
+            <li onClick={handleLogout}>Logout</li>
           </ul>
         </nav>
       </header>

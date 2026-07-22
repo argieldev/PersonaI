@@ -77,7 +77,6 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check required fields
     if (!email || !password) {
       return res.status(401).json({
         success: false,
@@ -85,8 +84,8 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Find user
-    const user = users.find((user) => user.email === email);
+    // Find user in MongoDB
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(401).json({
@@ -108,8 +107,7 @@ router.post("/login", async (req, res) => {
     // Generate JWT
     const token = jwt.sign(
       {
-        id: user.id,
-        role: user.role,
+        id: user._id,
       },
       process.env.JWT_SECRET,
       {
@@ -117,15 +115,13 @@ router.post("/login", async (req, res) => {
       },
     );
 
-    // Login success
     return res.status(200).json({
       success: true,
       token,
       user: {
-        id: user.id,
+        id: user._id,
         username: user.username,
         email: user.email,
-        role: user.role,
       },
     });
   } catch (err) {
