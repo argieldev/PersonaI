@@ -2,18 +2,11 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// Import user model
-const User = require("../models/User");
+// Import models
+const User = require("../models/User"); // user model
 
-const users = [
-  {
-    id: 1,
-    username: "owner",
-    email: "owner@gmail.com",
-    password: "$2b$10$JKD9bV6weg9PDme5HNEhn.1O5yG6Acotr22nclCwM.Ffl5.oSj0pO",
-    role: "user",
-  },
-];
+// Import middlewares
+const authMw = require("../middleware/authMiddleware");
 
 router.post("/register", async (req, res) => {
   try {
@@ -49,6 +42,7 @@ router.post("/register", async (req, res) => {
     const token = jwt.sign(
       {
         id: newUser._id,
+        username: user.username,
       },
       process.env.JWT_SECRET,
       {
@@ -60,9 +54,7 @@ router.post("/register", async (req, res) => {
       success: true,
       token,
       user: {
-        id: newUser._id,
         username: newUser.username,
-        email: newUser.email,
       },
     });
   } catch (error) {
@@ -108,6 +100,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
+        username: user.username,
       },
       process.env.JWT_SECRET,
       {
@@ -119,9 +112,7 @@ router.post("/login", async (req, res) => {
       success: true,
       token,
       user: {
-        id: user._id,
         username: user.username,
-        email: user.email,
       },
     });
   } catch (err) {
@@ -134,10 +125,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/test-users", async (req, res) => {
-  const users = await User.find();
+router.get("/loadWs", authMw, async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password");
 
-  res.json(users);
+  res.json(user);
 });
 
 module.exports = router;
