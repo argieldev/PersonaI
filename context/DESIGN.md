@@ -26,15 +26,15 @@ Default Theme
 
 Primary Color
 
-- To be decided
+- #181818
 
 Accent Color
 
-- To be decided
+- Amber
 
 Typography
 
-- To be decided
+- Inter
 
 ---
 
